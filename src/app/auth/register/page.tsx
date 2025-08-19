@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -77,6 +78,12 @@ const Register = () => {
           Submit
         </Button>
       </form>
+      <div>
+        <span className="text-gray-500">Already have account </span>
+        <Link href="/auth/login" className="">
+          Login
+        </Link>
+      </div>
     </div>
   );
 };
