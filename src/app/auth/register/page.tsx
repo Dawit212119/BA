@@ -3,13 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 const Register = () => {
+  const [pending, setPending] = useState(false);
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formdata = new FormData(e.target as HTMLFormElement);
+
+    // const { error } = await SignInWithEmail(formdata);
+    // if (error) {
+    //   toast.error(error);
+    //   console.log(error);
+    // } else {
+    //   toast.success("Logging success");
+    // }
+
+    // setPending(false);
+
     const name = String(formdata.get("name"));
     if (!name) return toast.error("name required");
     const password = String(formdata.get("password"));
@@ -28,11 +42,17 @@ const Register = () => {
       {
         onSuccess: () => {
           toast.success("registerd");
+          router.push("/profile");
         },
         onError: (ctx) => {
           toast.error(ctx.error.message);
         },
-        onResponse: () => {},
+        onResponse: () => {
+          setPending(false);
+        },
+        onRequest: () => {
+          setPending(true);
+        },
       }
     );
   };
@@ -53,7 +73,7 @@ const Register = () => {
           <Label htmlFor="password">password</Label>
           <Input id="password" name="password" type="password" />
         </div>
-        <Button type="submit" className="cursor-pointer">
+        <Button type="submit" className="cursor-pointer" disabled={pending}>
           Submit
         </Button>
       </form>
