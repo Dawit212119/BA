@@ -1,4 +1,5 @@
-import { auth } from "@/lib/auth";
+import { auth, ErrorCode } from "@/lib/auth";
+import { APIError } from "better-auth/api";
 
 export async function SignInWithEmail(formdata: FormData) {
   const password = String(formdata.get("password"));
@@ -18,8 +19,14 @@ export async function SignInWithEmail(formdata: FormData) {
 
     return { error: null };
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
+    if (error instanceof APIError) {
+      const Errorcode = error.body ? (error.body.code as ErrorCode) : "UNKNOWN";
+
+      switch (Errorcode) {
+        default: {
+          return { error: error.message };
+        }
+      }
     } else {
       return { error: "server error" };
     }
