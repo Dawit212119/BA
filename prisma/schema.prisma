@@ -28,6 +28,8 @@ model User {
   email         String
   emailVerified Boolean
   image         String?
+    role     UserRole   @default(User)
+
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
@@ -51,7 +53,10 @@ model Session {
   @@unique([token])
   @@map("session")
 }
-
+enum UserRole {
+  User
+  Admin
+}
 model Account {
   id                    String    @id   @default(uuid())
   accountId             String

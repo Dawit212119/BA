@@ -41,6 +41,14 @@ export const auth = betterAuth({
       }
     }),
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: ["User", "Admin"],
+        input: false,
+      },
+    },
+  },
   plugins: [nextCookies()],
   advanced: {
     database: {

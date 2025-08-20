@@ -1,7 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
 
-const protectedRoute = ["/profile"];
+const protectedRoute = ["/profile", "dashboard"];
 async function middelware(req: NextRequest) {
   const isSession = getSessionCookie(req);
   const isProtected = protectedRoute.includes(req.nextUrl.pathname);

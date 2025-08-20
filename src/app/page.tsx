@@ -32,7 +32,12 @@ const page = () => {
     <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col space-y-6">
         {" "}
-        <p>Welcome {session?.user.name}! </p>
+        <p
+          data-role={session?.user.role}
+          className="size-4 rounded-full data-[role=User]:bg-blue-600 data-[role=Admin]:bg-red-600"
+        >
+          Welcome {session?.user.name}!{" "}
+        </p>
         <Button asChild>
           <Link href={href}>Get Started</Link>
         </Button>{" "}
