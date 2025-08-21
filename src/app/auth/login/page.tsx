@@ -1,5 +1,6 @@
 "use client";
 import { SignInWithEmail } from "@/app/actions/signin";
+import SocialLoginButton from "@/components/socialLoginButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,6 +78,10 @@ const Register = () => {
         <Link href="/auth/register" className="font-bold underline">
           Register
         </Link>
+      </div>
+      <div className="flex flex-col space-y-3">
+        <SocialLoginButton provider="google" />
+        <SocialLoginButton provider="github" />
       </div>
     </div>
   );

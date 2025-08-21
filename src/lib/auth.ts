@@ -5,12 +5,24 @@ import { hashPassword, verifyPassword } from "./argon2";
 import { nextCookies } from "better-auth/next-js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { normalizeName, VALID_DOMAINS } from "./utils";
-
+import { admin } from "better-auth/plugins";
+import { UserRole } from "@/generated/prisma";
+import { ac, roles } from "./permission";
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
   session: { expiresIn: 30 * 24 * 60 * 60 },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     password: {
@@ -21,11 +33,12 @@ export const auth = betterAuth({
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email") {
+        console.log(ctx);
         const email = String(ctx.body.email);
         const domain = email.split("@")[1].toLowerCase();
         const ValidDomain = VALID_DOMAINS();
         if (!ValidDomain.includes(domain)) {
-          throw new APIError();
+          throw new APIError("BAD_REQUEST", { message: "Invalid Email!" });
         }
         const name = normalizeName(ctx.body.name);
 
@@ -34,12 +47,29 @@ export const auth = betterAuth({
             ...ctx,
             body: {
               ...ctx.body,
+
               name,
             },
           },
         };
       }
     }),
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const admin_email = process.env.ADMIN_EMAIL?.split(";") || [];
+          if (admin_email.includes(user.email)) {
+            return { data: { ...user, role: "Admin" } };
+          } else {
+            return {
+              data: { ...user },
+            };
+          }
+        },
+      },
+    },
   },
   user: {
     additionalFields: {
@@ -49,7 +79,15 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    admin({
+      defaultRole: UserRole.User,
+      adminRoles: UserRole.Admin,
+      ac,
+      roles,
+    }),
+  ],
   advanced: {
     database: {
       generateId: false,

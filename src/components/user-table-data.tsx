@@ -7,6 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DeleteUserButton,
+  PlaceholderDeleteUserButton,
+} from "./delete-user-button";
+import { ChangeRole } from "./changeRole";
 type User = {
   id: string;
   name: string;
@@ -41,8 +46,21 @@ const Usertabledata = ({ user }: { user: User }) => {
               </TableCell>
               <TableCell>{use.name}</TableCell>
               <TableCell> {use.email}</TableCell>
-              <TableCell className="text-right">{use.role}</TableCell>
-              <TableCell> DELETE</TableCell>
+              <TableCell className="text-right">
+                {use.role === "User" ? (
+                  <ChangeRole userId={use.id} role={use.role} />
+                ) : (
+                  use.role
+                )}
+              </TableCell>
+              <TableCell>
+                {" "}
+                {use.role === "User" ? (
+                  <DeleteUserButton userId={use.id} />
+                ) : (
+                  <PlaceholderDeleteUserButton />
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
