@@ -44,6 +44,9 @@ const Register = () => {
         },
         onError: (ctx) => {
           toast.error(ctx.error.message);
+          if (ctx.error.message === "Email not verified") {
+            router.push("/auth/verify?error=email_is_not_verfied");
+          }
         },
         onResponse: () => {
           setPending(false);

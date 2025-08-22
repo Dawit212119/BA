@@ -1,6 +1,7 @@
 "use client";
 import { UserRole } from "@/generated/prisma";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const ChangeRole = ({
@@ -10,6 +11,7 @@ export const ChangeRole = ({
   userId: string;
   role: string;
 }) => {
+  const router = useRouter();
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as UserRole;
     const canChangeRole = await authClient.admin.hasPermission({
@@ -30,6 +32,7 @@ export const ChangeRole = ({
         },
         onSuccess: () => {
           toast.error("Update Success");
+          router.refresh();
         },
       },
     });

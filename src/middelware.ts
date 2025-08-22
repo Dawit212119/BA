@@ -10,7 +10,17 @@ async function middelware(req: NextRequest) {
   if (isProtected && !isSession) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
-  if (isAuth && isSession) {
+  const publicAuthRoutes = [
+    "/auth/verify",
+    "/auth/verify/success",
+    "/auth/verify/error",
+  ];
+
+  if (
+    isAuth &&
+    isSession &&
+    !publicAuthRoutes.some((r) => req.nextUrl.pathname.startsWith(r))
+  ) {
     return NextResponse.redirect(new URL("/profile", req.url));
   }
   return NextResponse.next();

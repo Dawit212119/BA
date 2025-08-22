@@ -8,6 +8,7 @@ import { normalizeName, VALID_DOMAINS } from "./utils";
 import { admin } from "better-auth/plugins";
 import { UserRole } from "@/generated/prisma";
 import { ac, roles } from "./permission";
+import SendEmailAction from "@/app/actions/send-Email.action";
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -15,19 +16,42 @@ export const auth = betterAuth({
   session: { expiresIn: 30 * 24 * 60 * 60 },
   socialProviders: {
     google: {
+      prompt: "select_account",
+      accessType: "offline",
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
     github: {
+      prompt: "select_account",
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
   emailAndPassword: {
     enabled: true,
+    autoSignIn: true,
     password: {
       hash: hashPassword,
       verify: verifyPassword,
+    },
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 60 * 60,
+    sendVerificationEmail: async ({ user, url }) => {
+      const link = new URL(url);
+      link.searchParams.set("callbackURL", "/auth/verify");
+
+      await SendEmailAction({
+        to: user.email,
+        subject: "Verfiy Your Email",
+        meta: {
+          description: "Please verify your email to complete registration",
+          link: String(link),
+        },
+      });
     },
   },
   hooks: {
