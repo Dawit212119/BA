@@ -72,7 +72,21 @@ const Register = () => {
           <Input id="email" name="email" type="email" />
         </div>
         <div className="grid w-full max-w-sm items-center gap-3">
-          <Label htmlFor="password">password</Label>
+          <div className="flex justify-between">
+            {" "}
+            <Label htmlFor="password">password</Label>
+            <p>
+              {" "}
+              <Link
+                href="/auth/forgotPassword"
+                className="text-sm italic underline"
+              >
+                {" "}
+                forgot password?
+              </Link>{" "}
+            </p>
+          </div>
+
           <Input id="password" name="password" type="password" />
         </div>
         <Button type="submit" className="cursor-pointer" disabled={pending}>
